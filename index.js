@@ -22,6 +22,7 @@ function getSocketsKeys(sockets) {
 }
 
 io.on('connection', (socket) => {
+    io.sockets.emit('keys-share', { keys: getSocketsKeys(io.sockets.connected) })
 
 
     socket.on('creating-connection', data => {
@@ -30,12 +31,22 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', data => {
+        console.log(socket.id)
         io.sockets.emit('keys-share', { keys: getSocketsKeys(io.sockets.connected) })
     })
 
     socket.on('invite', data => {
-        io.sockets.sockets[data.addressee].emit('invitation', { sender: data.sender })
+        io.sockets.sockets[data.addressee].emit('invitation', data)
+        // io.sockets.sockets[data.addressee].emit('invitation', { sender: data.sender, addressee: data.addressee })
+    })
+
+    socket.on('reject', data => {
+        io.sockets.sockets[data.me].emit('invitation', null)
+    })
+
+    socket.on('accept', data => {
         console.log(data)
+        io.sockets.sockets[data.sender].emit('onAccept', data)
     })
 
 })
