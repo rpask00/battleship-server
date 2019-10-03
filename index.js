@@ -45,8 +45,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('accept', data => {
-        console.log(data)
+        let whoBegin = (Math.random() > .5);
+
         io.sockets.sockets[data.sender].emit('onAccept', data)
+        io.sockets.sockets[data.sender].emit('game-begin', whoBegin ? 1 : 2)
+        io.sockets.sockets[data.addressee].emit('game-begin', !whoBegin ? 1 : 2)
     })
 
 })
