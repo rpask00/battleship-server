@@ -36,7 +36,6 @@ io.on('connection', (socket) => {
 
     socket.on('invite', data => {
         io.sockets.sockets[data.addressee].emit('invitation', data)
-        // io.sockets.sockets[data.addressee].emit('invitation', { sender: data.sender, addressee: data.addressee })
     })
 
     socket.on('reject', data => {
@@ -52,8 +51,14 @@ io.on('connection', (socket) => {
     })
 
     socket.on('place-hit', data => {
-        console.log(data)
-        io.sockets[data.defender].emit('get-hit',data.cord)
+        if (data.defender)
+            io.sockets.sockets[data.defender].emit('get-hit', data.cordsToDelete)
     })
+
+    socket.on('game-over', data => {
+        console.log(data)
+        io.sockets.sockets[data].emit('you-won', data)
+    })
+
 
 })
